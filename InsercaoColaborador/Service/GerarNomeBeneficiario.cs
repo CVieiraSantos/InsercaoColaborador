@@ -6,7 +6,7 @@ namespace InsercaoColaborador.Service
     {
         public static string GetNomeBeneficiario(TransacaoExcel e)
         {
-            if (!string.IsNullOrWhiteSpace(e.NomeCredor) && e.NomeCredor.Contains('-'))
+            if (string.IsNullOrWhiteSpace(e.CnpjCpf) || e.CnpjCpf.Trim() == "-")
                 return e.NomeCredor;
 
             return e.CnpjCpf;

@@ -1,4 +1,5 @@
-﻿using InsercaoColaborador.Application.Interfaces;
+﻿using DocumentFormat.OpenXml.Wordprocessing;
+using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Colaborador;
 using InsercaoColaborador.Extension;
 using InsercaoColaborador.Service;
@@ -47,12 +48,13 @@ namespace InsercaoColaborador.Application.Services
 
             var header = new StringBuilder();
 
-            var employee = colaboradores
-                .Where(c => !string.IsNullOrWhiteSpace(CpfCnpjGenerator.FormatarCpf(c)))
-                .DistinctBy(c => c.CPF)
-                .Select(x => new { x.Nome, x.CPF, x.CNS })
-                .ToList();
+            //var employee = colaboradores
+            //    .Where(c => !string.IsNullOrWhiteSpace(CpfCnpjGenerator.FormatarCpf(c)))
+            //    .DistinctBy(c => c.CPF)
+            //    .Select(x => new { x.Nome, x.CPF, x.CNS })
+            //    .ToList();
 
+            var employee = ColaboradorCpf.FiltroCpfUnico(colaboradores);
 
             if (employee.Count == 0)
             {

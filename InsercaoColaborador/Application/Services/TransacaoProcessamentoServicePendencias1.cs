@@ -3,20 +3,24 @@ using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Transacao;
 using InsercaoColaborador.Extension;
 using InsercaoColaborador.Service;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace InsercaoColaborador.Application.Services
 {
-    public class TransacaoProcessamentoService : IProcessamentoService
+    public class TransacaoProcessamentoServicePendencias1 : IProcessamentoService
     {
-        public string Nome => "Gerar INSERT de Transações";
+        public string Nome => "Gerar INSERT de Transações Pendencias 1";
 
         public void Executar()
         {
             string caminhoExcel = @"C:\Users\Carlos Vieira\Downloads\CPFs para montagem de insert(2).xlsx";
-            string caminhoSql = @"C:\Users\Carlos Vieira\Downloads\insert_transacoes_novo.sql";
+            string caminhoSql = @"C:\Users\Carlos Vieira\Downloads\insert_transacoes_novo_pendencias1.sql";
 
 
             if (!File.Exists(caminhoExcel))
@@ -25,7 +29,7 @@ namespace InsercaoColaborador.Application.Services
                 return;
             }
 
-            var transacaoExcel = ExcelService.ImportarExcel(caminhoExcel, "RELACAO PAG 2 SEMESTRE", linha =>
+            var transacaoExcel = ExcelService.ImportarExcel(caminhoExcel, "pendencias 1", linha =>
             {
                 return new TransacaoExcel
                 {
@@ -65,10 +69,10 @@ namespace InsercaoColaborador.Application.Services
                     IdParceria = 266,
                     Referencia = e.DataPagamento.Month,
                     Exercicio = e.DataPagamento.Year,
-                    Status = 0,
-                    Avaliador = "",
-                    ValorContestado = null,
-                    Conciliado = 1,
+                    Status = ResolverStatus(e.StatusAnalise, e.StatusCor),
+                    Avaliador = "Maria Cristina Figueiredo Shigaki",
+                    ValorContestado = e.ValorGlosado,
+                    Conciliado = e.ValorConciliado ? 1 : 0,
                     DataHoraConciliacao = DateTime.Now,
                     ObservacoesEntidade = e.Item,
                     ObservacoesOrgao = e.Observacoes,
@@ -217,7 +221,6 @@ namespace InsercaoColaborador.Application.Services
 
                 return null;
             }
-
 
         }
     }

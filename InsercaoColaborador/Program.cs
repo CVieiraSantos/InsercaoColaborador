@@ -4,7 +4,8 @@ using InsercaoColaborador.Application.Services;
 var servicos = new List<IProcessamentoService>
 {
     new ColaboradorProcessamentoService(),
-    new TransacaoProcessamentoService()
+    new TransacaoProcessamentoServiceRelacaoPagSemPendencias(),
+    new TransacaoProcessamentoServicePendencias1()
 };
 
 Console.WriteLine("Selecione o tipo de processamento:\n");
