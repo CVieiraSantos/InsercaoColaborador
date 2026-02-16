@@ -1,8 +1,9 @@
 ﻿using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Transacao;
 using InsercaoColaborador.Extension;
+using InsercaoColaborador.Infrastructure.Sql.Builders;
+using InsercaoColaborador.Infrastructure.Sql.Mappers.TransacaoMapper;
 using InsercaoColaborador.Service;
-using System.Globalization;
 using System.Text;
 
 namespace InsercaoColaborador.Application.Services
@@ -88,61 +89,14 @@ namespace InsercaoColaborador.Application.Services
                 };
             }).ToList();
 
-            var header = new StringBuilder();
-
-            header.AppendLine("INSERT INTO transacao");
-            header.AppendLine("(");
-            header.AppendLine("    IdExtrato, Numero, DataTransacao, Descricao, Valor, Tipo, NotaFiscal, Categoria, DataNotaFiscal,");
-            header.AppendLine("    NomeBeneficiario, OrigemRecurso, IdParceria, Referencia, Exercicio, Status, Avaliador,");
-            header.AppendLine("    ValorContestado, Conciliado, DataHoraConciliacao, ObservacoesEntidade, ObservacoesOrgao,");
-            header.AppendLine("    DataHoraCadastro, IdCliente, IdEBanco, MeioPagamento, ValorDocumento, ValorEncargos,");
-            header.AppendLine("    EstadoEmissor, SubCategoria, ExisteRateio, AnaliseEscrita");
-            header.AppendLine(") VALUES");
-
-            var tuples = transacoes.Select(item =>
-            $@"(
-                {SqlInt(item.IdExtrato)},
-                {SqlString(item.Numero)},
-                {SqlDateTime(item.DataTransacao)},
-                {SqlString(item.Descricao)},
-                {SqlDecimal(item.Valor)},
-                {SqlString(item.Tipo)},
-                {SqlString(item.NotaFiscal)},
-                {SqlString(item.Categoria)},
-                {SqlDateTime(item.DataNotaFiscal)},
-                {SqlString(item.NomeBeneficiario)},
-                {SqlString(item.OrigemRecurso)},
-                {SqlInt(item.IdParceria)},
-                {SqlInt(item.Referencia)},
-                {SqlInt(item.Exercicio)},
-                {SqlInt(item.Status)},
-                {SqlString(item.Avaliador)},
-                {SqlDecimalNullable(item.ValorContestado)},
-                {SqlInt(item.Conciliado)},
-                {SqlDateTimeNullable(item.DataHoraConciliacao)},
-                {SqlString(item.ObservacoesEntidade)},
-                {SqlString(item.ObservacoesOrgao)},
-                {SqlDateTimeNullable(item.DataHoraCadastro)},
-                {SqlInt(item.IdCliente)},
-                {SqlIntNullable(item.IdEBanco)},
-                {SqlInt(item.MeioPagamento)},
-                {SqlDecimal(item.ValorDocumento)},
-                {SqlDecimal(item.ValorEncargos)},
-                {SqlInt(item.EstadoEmissor)},
-                {SqlInt(item.SubCategoria)},
-                {SqlInt(item.ExisteRateio)},
-                {SqlString(item.AnaliseEscrita)}
-            )");
-
-            File.WriteAllText(caminhoSql, header.ToString() + string.Join("," + Environment.NewLine, tuples) + ";", Encoding.UTF8);
-
-            static string SqlString(string? s) => s == null ? "NULL" : $"'{s.Replace("'", "''")}'";
-            static string SqlDecimal(decimal d) => d.ToString("F2", CultureInfo.InvariantCulture);
-            static string SqlDecimalNullable(decimal? d) => d.HasValue ? SqlDecimal(d.Value) : "NULL";
-            static string SqlInt(int i) => i.ToString(CultureInfo.InvariantCulture);
-            static string SqlIntNullable(int? i) => i.HasValue ? SqlInt(i.Value) : "NULL";
-            static string SqlDateTime(DateTime dt) => $"'{dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}'";
-            static string SqlDateTimeNullable(DateTime? dt) => dt.HasValue ? SqlDateTime(dt.Value) : "NULL";
+            var sql = SqlInsertBuilder.BuildInsert(
+                table: "transacao",
+                columns: TransacaoSqlColumns.All,
+                items: transacoes,
+                valuesProjection: TransacaoSqlMapper.MapValues
+            );
+            
+            File.WriteAllText(caminhoSql, sql, Encoding.UTF8);
         }
     }
 }
