@@ -15,5 +15,6 @@
         public string? Observacoes { get; set; }
         public string StatusAnalise { get; set; }
         public string? StatusCor { get; set; }
+        public string Documento { get; set; } = null!;
     }
 }

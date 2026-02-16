@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Wordprocessing;
-using InsercaoColaborador.Application.Interfaces;
+﻿using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Colaborador;
 using InsercaoColaborador.Extension;
 using InsercaoColaborador.Service;

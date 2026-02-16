@@ -201,12 +201,25 @@ namespace InsercaoColaborador.Application.Services
 
             DateTime? ParseExcelDate(IXLCell cell)
             {
-                if (cell.Value.IsDateTime) return cell.GetDateTime();
+                //if (cell.Value.IsDateTime) return cell.GetDateTime();
 
                 var s = cell.GetString()?.Trim();
                 if (string.IsNullOrEmpty(s)) return null;
 
-                // Try common formats and cultures
+                var dataString = s.Split("/"); // 1/13/2025
+                                               // 10/1/2025
+
+                int.TryParse(dataString[0], out int dia);
+
+                int.TryParse(dataString[1], out int mes);
+
+                if (dia > 0 && dia < 13 && mes <= 12)
+                {
+                    s = string.Concat(dataString[1], "/", dataString[0], "/", dataString[2]);
+                    if (DateTime.TryParse(s, new CultureInfo("pt-BR"), DateTimeStyles.None, out DateTime dta))
+                        return dta;
+                }
+
                 var formats = new[] { "M/d/yyyy", "M/d/yy", "MM/dd/yyyy", "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd" };
                 if (DateTime.TryParseExact(s, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
                     return dt;

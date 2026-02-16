@@ -45,6 +45,6 @@
         public DateTime? DataHoraConciliacao { get; set; }
         public int? IdUnidadeAtendimento { get; set; }
         public string? IdentificadorStorage { get; set; }
-        public string? UrlDownloadArquivoTransacao { get; set; }
+        public string? UrlDownloadArquivoTransacao { get; set; }        
     }
 }
