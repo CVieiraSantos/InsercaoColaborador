@@ -1,9 +1,7 @@
-﻿using ClosedXML.Excel;
-using InsercaoColaborador.Application.Interfaces;
+﻿using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Transacao;
 using InsercaoColaborador.Extension;
 using InsercaoColaborador.Service;
-using System.Drawing;
 using System.Globalization;
 using System.Text;
 
@@ -33,7 +31,6 @@ namespace InsercaoColaborador.Application.Services
                     NomeCredor = linha.Cell(2).GetString().Trim(),
                     Documento = linha.Cell(3).GetString().Trim(),
                     NumeroCheque = linha.Cell(4).GetString().Trim(),
-                    //DataPagamento = ParseExcelDate(linha.Cell(5)) ?? throw new FormatException($"Invalid data in row {linha.RowNumber()} column 7"),
                     DataPagamento = linha.Cell(5).GetDateTimeOrNull()?? throw new FormatException($"Invalid data in row {linha.RowNumber()} column 7"),
                     Total = linha.Cell(6).GetDecimal(),
                 };
@@ -41,7 +38,6 @@ namespace InsercaoColaborador.Application.Services
 
             var transacoes = transacaoExcel.Select(e =>
             {
-                //var nomeBeneficiario = GerarNomeBeneficiario.GetNomeBeneficiario(e);
 
                 return new Transacao
                 {
@@ -54,7 +50,6 @@ namespace InsercaoColaborador.Application.Services
                     NotaFiscal = string.IsNullOrWhiteSpace(e.Documento) ? null : e.Documento,
                     Categoria = "Outras despesas",
                     DataNotaFiscal = e.DataPagamento,
-                    //NomeBeneficiario = nomeBeneficiario.Length > 100 ? nomeBeneficiario.Substring(0, 100) : nomeBeneficiario,
                     NomeBeneficiario = e.NomeCredor.Length > 100 ? e.NomeCredor.Substring(0,100) : e.NomeCredor,
                     OrigemRecurso = "Estadual",
                     IdParceria = 280,
@@ -148,24 +143,6 @@ namespace InsercaoColaborador.Application.Services
             static string SqlIntNullable(int? i) => i.HasValue ? SqlInt(i.Value) : "NULL";
             static string SqlDateTime(DateTime dt) => $"'{dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}'";
             static string SqlDateTimeNullable(DateTime? dt) => dt.HasValue ? SqlDateTime(dt.Value) : "NULL";
-
-            //DateTime? ParseExcelDate(IXLCell cell)
-            //{
-            //    if (cell.Value.IsDateTime) 
-            //        return cell.GetDateTime();
-
-            //    var s = cell.GetString()?.Trim();
-                
-            //    if (string.IsNullOrEmpty(s)) 
-            //        return null;
-
-            //    if (DateTime.TryParse(s, new CultureInfo("pt-BR"), DateTimeStyles.None, out DateTime dt))
-            //        return dt;
-
-            //    return null;
-            //}
-
-
         }
     }
 }
