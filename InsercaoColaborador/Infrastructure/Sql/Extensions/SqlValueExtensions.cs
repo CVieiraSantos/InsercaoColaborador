@@ -15,6 +15,9 @@ namespace InsercaoColaborador.Infrastructure.Sql.ConverterSql
 
         public static string ToSql(this decimal d) =>
             d.ToString("F2", CultureInfo.InvariantCulture);
+        
+        public static string ToSql(this double d) =>
+            d.ToString("F2", CultureInfo.InvariantCulture);
 
         public static string ToSql(this decimal? d) =>
             d.HasValue ? d.Value.ToSql() : "NULL";

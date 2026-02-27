@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="CodigoAntigo\" />
-    <Folder Include="Infrastructure\Sql\Mappers\ColaboradorMapper\" />
   </ItemGroup>
 
 </Project>

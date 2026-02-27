@@ -6,7 +6,9 @@ var servicos = new List<IProcessamentoService>
     new ColaboradorProcessamentoService(),
     new TransacaoProcessamentoServiceRelacaoPagSemPendencias(),
     new TransacaoProcessamentoServicePendencias1(),
-    new TransacaoProcessamentoServiceRelacaoPagConvenio()
+    new TransacaoProcessamentoServiceRelacaoPagConvenio(),
+    new TransacaoProcessamentoServiceRelaçãoDePagamentosFAPUNIFESP(),
+    new ContratoProcessamento()
 };
 
 Console.WriteLine("Selecione o tipo de processamento:\n");

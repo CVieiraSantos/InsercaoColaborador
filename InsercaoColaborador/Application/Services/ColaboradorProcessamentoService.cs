@@ -1,8 +1,9 @@
 ﻿using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Colaborador;
 using InsercaoColaborador.Extension;
+using InsercaoColaborador.Infrastructure.Sql.Builders;
+using InsercaoColaborador.Infrastructure.Sql.Mappers.ColaboradorMapper;
 using InsercaoColaborador.Service;
-using System.Globalization;
 using System.Text;
 
 namespace InsercaoColaborador.Application.Services
@@ -13,7 +14,7 @@ namespace InsercaoColaborador.Application.Services
 
         public void Executar()
         {
-            string caminhoExcel = @"C:\Users\Carlos Vieira\Downloads\CPFs para montagem de insert(1).xlsx";
+            string caminhoExcel = @"C:\Users\Carlos Vieira\Downloads\CPFs para montagem de insert.xlsx";
             string caminhoSql = @"C:\Users\Carlos Vieira\Downloads\insert_colaboradores_novo.sql";
 
 
@@ -43,15 +44,9 @@ namespace InsercaoColaborador.Application.Services
                     CPF = c.CPFExcel,
                     CNS = c.ItemExcel
                 }
-            );
+            ).ToList();
 
-            var header = new StringBuilder();
-
-            //var employee = colaboradores
-            //    .Where(c => !string.IsNullOrWhiteSpace(CpfCnpjGenerator.FormatarCpf(c)))
-            //    .DistinctBy(c => c.CPF)
-            //    .Select(x => new { x.Nome, x.CPF, x.CNS })
-            //    .ToList();
+            //var header = new StringBuilder();
 
             var employee = ColaboradorCpf.FiltroCpfUnico(colaboradores);
 
@@ -61,51 +56,60 @@ namespace InsercaoColaborador.Application.Services
                 return;
             }
 
-            header.Clear();
-            header.AppendLine("INSERT INTO colaboradores");
-            header.AppendLine("(");
-            header.AppendLine("    IdTResponsavel, IdCargo, IdEntidade, Nome, DataNascimento, Rg, Cpf, Endereco,");
-            header.AppendLine("    Numero, Bairro, Cidade, Uf, Cep, TelContato1, TelContato2, Email1, Email2,");
-            header.AppendLine("    DataCriacao, Ativo, OrgaoClasse, Formacao, Vinculo, CargaHoraria, Salario,");
-            header.AppendLine("    IdCliente, CNS");
-            header.AppendLine(") VALUES");
+            var sql = SqlInsertBuilder.BuildInsert(
+               table: "colaboradores",
+               columns: ColaboradorSqlColumns.All,
+               items: employee,
+               valuesProjection: ColaboradorSqlMapper.MapValues
+           );
 
-            var tuples = employee.Select(item =>
-            $@"(
-                {SqlInt(2)},
-                {SqlInt(353)},
-                {SqlInt(75)},
-                {SqlString(item.Nome)},
-                {SqlDateTime(DateTime.Now)},
-                '.',
-                {SqlString(CpfCnpjGenerator.FormatarCpf(new Colaborador { CPF = item.CPF }))},
-                '.',
-                '.',
-                '.',
-                '.',
-                '.',
-                '.',
-                NULL,
-                NULL,
-                NULL,
-                NULL,
-                {SqlDateTime(DateTime.Now)},
-                {SqlInt(1)},
-                NULL,
-                {SqlString("Ensino Superior Completo")},
-                {SqlString("CLT")},
-                {SqlInt(0)},
-                {SqlDecimal(0m)},
-                {SqlInt(22)},
-                {SqlString(item.CNS)}
-            )");
+            File.WriteAllText(caminhoSql, sql, Encoding.UTF8);
+            employee.Count();
+            //header.Clear();
+            //header.AppendLine("INSERT INTO colaboradores");
+            //header.AppendLine("(");
+            //header.AppendLine("    IdTResponsavel, IdCargo, IdEntidade, Nome, DataNascimento, Rg, Cpf, Endereco,");
+            //header.AppendLine("    Numero, Bairro, Cidade, Uf, Cep, TelContato1, TelContato2, Email1, Email2,");
+            //header.AppendLine("    DataCriacao, Ativo, OrgaoClasse, Formacao, Vinculo, CargaHoraria, Salario,");
+            //header.AppendLine("    IdCliente, CNS");
+            //header.AppendLine(") VALUES");
 
-            File.WriteAllText(caminhoSql, header.ToString() + string.Join("," + Environment.NewLine, tuples) + ";", Encoding.UTF8);
+            //var tuples = employee.Select(item =>
+            //$@"(
+            //    {SqlInt(2)},
+            //    {SqlInt(353)},
+            //    {SqlInt(75)},
+            //    {SqlString(item.Nome)},
+            //    {SqlDateTime(DateTime.Now)},
+            //    '.',
+            //    {SqlString(CpfCnpjGenerator.FormatarCpf(new Colaborador { CPF = item.CPF }))},
+            //    '.',
+            //    '.',
+            //    '.',
+            //    '.',
+            //    '.',
+            //    '.',
+            //    NULL,
+            //    NULL,
+            //    NULL,
+            //    NULL,
+            //    {SqlDateTime(DateTime.Now)},
+            //    {SqlInt(1)},
+            //    NULL,
+            //    {SqlString("Ensino Superior Completo")},
+            //    {SqlString("CLT")},
+            //    {SqlInt(0)},
+            //    {SqlDecimal(0m)},
+            //    {SqlInt(22)},
+            //    {SqlString(item.CNS)}
+            //)");
 
-            static string SqlString(string? s) => s == null ? "NULL" : $"'{s.Replace("'", "''")}'";
-            static string SqlDecimal(decimal d) => d.ToString("F2", CultureInfo.InvariantCulture);
-            static string SqlInt(int i) => i.ToString(CultureInfo.InvariantCulture);
-            static string SqlDateTime(DateTime dt) => $"'{dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}'";
+            //File.WriteAllText(caminhoSql, header.ToString() + string.Join("," + Environment.NewLine, tuples) + ";", Encoding.UTF8);
+
+            //static string SqlString(string? s) => s == null ? "NULL" : $"'{s.Replace("'", "''")}'";
+            //static string SqlDecimal(decimal d) => d.ToString("F2", CultureInfo.InvariantCulture);
+            //static string SqlInt(int i) => i.ToString(CultureInfo.InvariantCulture);
+            //static string SqlDateTime(DateTime dt) => $"'{dt.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}'";
         }
     }
 }
