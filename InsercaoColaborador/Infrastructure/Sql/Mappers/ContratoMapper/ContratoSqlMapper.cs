@@ -6,7 +6,6 @@ namespace InsercaoColaborador.Infrastructure.Sql.Mappers.ContratoMapper
     public class ContratoSqlMapper
     {
         public static string MapValues(Contrato item) => $@"(
-            {item.IdContrato.ToSql()},
             {item.NumeroContrato.ToSql()},
             {item.IdFornecedor.ToSql()},
             {item.IdCotacao.ToSql()},

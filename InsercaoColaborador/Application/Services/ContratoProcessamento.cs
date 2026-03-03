@@ -30,7 +30,7 @@ namespace InsercaoColaborador.Application.Services
                 return new ContratoExcel
                 {
                     Item = ValorEmInteiro.GetInt(linha.Cell(1)),
-                    CnpjFornecedor = ValorEmInteiro.GetInt(linha.Cell(2)),
+                    CnpjFornecedor = linha.Cell(2).GetString().Trim(),
                     NumeroContrato = linha.Cell(3).GetString().Trim(),
                     PagamentoParcelado = ValorEmInteiro.GetInt(linha.Cell(4)),
                     QuantidadedeParcelas = ValorEmInteiro.GetInt(linha.Cell(5)),
@@ -52,59 +52,37 @@ namespace InsercaoColaborador.Application.Services
 
             var contratos = contratoExcel.Select(e =>
             {
+                
+                
 
                 return new Contrato
                 {
-                    IdContrato = 10092,
-                    NumeroContrato = e.NumeroContrato,
-                    //DataTransacao = e.DataPagamento,
-                    //Descricao = e.NomeCredor,
-                    //Valor = e.Total,
-                    //Tipo = "DEBIT",
-                    //NotaFiscal = string.IsNullOrWhiteSpace(e.Documento) ? null : e.Documento,
-                    //Categoria = "Outras despesas",
-                    //DataNotaFiscal = e.DataPagamento,
-                    //NomeBeneficiario = e.NomeCredor.Length > 100 ? e.NomeCredor.Substring(0, 100) : e.NomeCredor,
-                    //OrigemRecurso = "Estadual",
-                    //IdParceria = 280,
-                    //Referencia = e.DataPagamento.Month,
-                    //Exercicio = e.DataPagamento.Year,
-                    //IdentificadorStorage = null,
-                    //UrlDownloadArquivoTransacao = null,
-                    //Status = 0,
-                    //Avaliador = "",
-                    //DataHoraAnalise = null,
-                    //ValorContestado = null,
-                    //Conciliado = 1,
-                    //DataHoraConciliacao = DateTime.Now,
-                    //ObservacoesEntidade = "",
-                    //ObservacoesOrgao = "",
-                    //IdUnidadeAtendimento = null,
-                    //DataHoraCadastro = DateTime.Now,
-                    //DataHoraUltimaAlteracao = null,
-                    //IdCliente = 22,
-                    //NaturezaDevolucao = null,
-                    //IdEBanco = 171,
-                    //MeioPagamento = 1,
-                    //ValorDocumento = 0,
-                    //ValorEncargos = 0,
-                    //EstadoEmissor = 26,
-                    //IdContrato = null,
-                    //SubCategoria = 0,
-                    //ItemDespesa = null,
-                    //IdItemPlanoAplicacao = null,
-                    //ExisteRateio = 0,
-                    //PercentualRateio = null,
-                    //AnaliseEscrita = "",
-                    //IdRepasse = null,
-                    //IdBeneficiario = null,
-                    //TipoBeneficiario = null,
+                    IdFornecedor = null,
+                    RazaoSocialFornecedor = e.CnpjFornecedor.Trim(),
+                    NumeroContrato = e.NumeroContrato.Trim(),
+                    Parcelado = e.PagamentoParcelado,
+                    QuantidadedeParcelas = e.QuantidadedeParcelas,
+                    TipoValorContrato = e.TipoDeValorDoContrato,
+                    TipoVigencia = e.TipoDeVigencia,
+                    Inicio = e.InicioVigencia,
+                    Fim = e.FimVigencia,
+                    DataAssinatura = e.DataAssinatura,
+                    CriterioSelecao = e.CriterioDeSelecao,
+                    CriterioSelecaoOutro = e.CriterioDeSelecao == 4 ? e.CriterioDeSelecaoOutro : string.Empty,
+                    CategoriaDespesa = e.CategoriaDeDespesa.Trim(),
+                    Valor = e.Valor,
+                    ObjetoContrato = e.Objeto,
+                    NaturezaContratacao = e.NaturezaDeContratacao,
+                    NaturezaContratacaoOutro = e.NaturezaDeContratacao == "23"? e.NaturezaNaoEspecificada : string.Empty,
+                    ArtigoRegulamentoCompras = e.ArtigoRegulamentoCompras,
+                    Ativo = 1,
+                    IdCliente = 22
                 };
             }).ToList();
 
             var sql = SqlInsertBuilder.BuildInsert(
                 table: "contrato",
-                columns: TransacaoSqlColumns.All,
+                columns: ContratoSqlColumns.All,
                 items: contratos,
                 valuesProjection: ContratoSqlMapper.MapValues
             );

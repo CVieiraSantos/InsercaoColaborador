@@ -3,7 +3,7 @@
     public class ContratoExcel
     {
         public int Item { get; set; }
-        public int CnpjFornecedor { get; set; }
+        public string CnpjFornecedor { get; set; } = null!;
         public string NumeroContrato { get; set; } = null!;
         public int PagamentoParcelado { get; set; }
         public int QuantidadedeParcelas { get; set; }

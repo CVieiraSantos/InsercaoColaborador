@@ -4,7 +4,6 @@
     {
         public static readonly string[] All =
         {
-            "IdContrato",
             "NumeroContrato",
             "IdFornecedor",
             "IdCotacao",
@@ -16,7 +15,7 @@
             "QuantidadedeParcelas",
             "CategoriaDespesa",
             "LinkArquivoContrato",
-            "IdIdentidade",
+            "IdEntidade",
             "Ativo",
             "IdCliente",
             "IdPrestadorServico",
