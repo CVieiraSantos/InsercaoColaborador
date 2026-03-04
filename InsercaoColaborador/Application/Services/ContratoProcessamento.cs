@@ -3,7 +3,6 @@ using InsercaoColaborador.Entities.Contrato;
 using InsercaoColaborador.Extension;
 using InsercaoColaborador.Infrastructure.Sql.Builders;
 using InsercaoColaborador.Infrastructure.Sql.Mappers.ContratoMapper;
-using InsercaoColaborador.Infrastructure.Sql.Mappers.TransacaoMapper;
 using InsercaoColaborador.Service;
 using System.Text;
 

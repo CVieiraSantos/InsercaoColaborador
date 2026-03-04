@@ -123,9 +123,6 @@ namespace InsercaoColaborador.Application.Services
 
             }
 
-            //Relação_de_Pagamentos_FAPUNIFESP 04.2025 a 09.2025
-
-
             DateTime? ParseExcelDate(IXLCell cell)
             {
 
@@ -193,24 +190,11 @@ namespace InsercaoColaborador.Application.Services
                 return 0;
             }
 
-            //static decimal? ObterValorGlosaParcial(TransacaoExcel transacaoExcel, int status)
-            //{
-            //    if(status != 3)
-            //        return null;
-            //    //tentar converter o valor glosado string pra decimal, se converter com sucesso, retorna ele.
-            //    // Se não conseguir converter, vai ter que pegar a coluna L e isolar os números, e depois que isolar os números
-            //    //converter pra decimal. Se converteu com sucesso, retorna o numero convertido, se nao, retorna nulo.
-            //    var arrayDividido =  transacaoExcel.ApuracaoGlosaParcial.Split(" ");
-            //    var valorString = arrayDividido.Last();
-            //}
-
             static decimal? ObterValorGlosaParcial(TransacaoExcel transacaoExcel, int status)
             {
-                // Validação de segurança
                 if (status != 3)
                     return null;
 
-                // Configuração para o padrão brasileiro (vírgula como decimal)
                 var cultureBR = new CultureInfo("pt-BR");
                 var estilo = NumberStyles.Number | NumberStyles.AllowCurrencySymbol;
 
@@ -219,7 +203,6 @@ namespace InsercaoColaborador.Application.Services
                     return valorGlosado;
                 }
 
-                // 1. TENTATIVA DIRETA: Pega a última palavra da frase
                 var partes = transacaoExcel.ApuracaoGlosaParcial.Trim().Split(' ');
                 var ultimaPalavra = partes.Last();
 
@@ -228,17 +211,13 @@ namespace InsercaoColaborador.Application.Services
                     return valorDireto;
                 }
 
-                // 2. ISOLAMENTO (Coluna L): Se falhar, limpa a string para extrair apenas o número
-                // O padrão @"[^\d,.]" remove tudo que não for dígito, vírgula ou ponto
                 string apenasNumeros = Regex.Replace(transacaoExcel.ApuracaoGlosaParcial, @"[^\d,.]", "");
 
-                // Tenta converter a string limpa
                 if (decimal.TryParse(apenasNumeros, estilo, cultureBR, out decimal valorIsolado))
                 {
                     return valorIsolado;
                 }
 
-                // Retorna nulo se nenhuma das tentativas de conversão funcionar
                 return null;
             }
 

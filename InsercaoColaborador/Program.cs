@@ -1,6 +1,5 @@
 ﻿using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Application.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var servicos = new List<IProcessamentoService>
 {
@@ -10,7 +9,8 @@ var servicos = new List<IProcessamentoService>
     new TransacaoProcessamentoServiceRelacaoPagConvenio(),
     new TransacaoProcessamentoServiceRelaçãoDePagamentosFAPUNIFESP(),
     new ContratoProcessamento(),
-    new TransacaoProcessamentoServiceRelacaoPagWylinka()
+    new TransacaoProcessamentoServiceRelacaoPagWylinka(),
+    new TransacaoProcessamentoServiceModeloComplementaçãoDespesasPagas()
 };
 
 Console.WriteLine("Selecione o tipo de processamento:\n");
