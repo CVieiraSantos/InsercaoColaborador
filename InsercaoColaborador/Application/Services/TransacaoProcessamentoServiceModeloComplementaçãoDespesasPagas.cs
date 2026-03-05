@@ -29,7 +29,6 @@ namespace InsercaoColaborador.Application.Services
                 {
                     Item = linha.Cell(1).GetString().Trim(),
                     NotaFiscalOuEquivalente = linha.Cell(2).GetString().Trim(),
-                    //DataEmissaoDocFiscal = ParseExcelDate(linha.Cell(3)) ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
                     DataEmissaoDocFiscal = ValorEmData.GetDatetime(linha.Cell(3)) ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
                     EstadoEmissor = ValorEmInteiro.GetInt(linha.Cell(4)),
                     CnpjCpf = linha.Cell(5).GetString().Trim(),
@@ -44,9 +43,7 @@ namespace InsercaoColaborador.Application.Services
 
             var transacoes = transacaoExcel.Select(e =>
             {
-                //var DescricaoDespesa = string.Concat(e.TipoDespesa, " - ", e.SubCategoriaDeDespesa);
                 var nomeBeneficiario = GerarNomeBeneficiario.GetNomeBeneficiario(e);
-                //int status = ResolverStatus(e.StatusAnalise, e);
 
                 return new Transacao
                 {
@@ -61,22 +58,17 @@ namespace InsercaoColaborador.Application.Services
                     ExisteRateio = e.Rateio ?? 0,
                     PercentualRateio = e.Rateio > 0 ? e.PercentualRateio : null,
                     NumeroDoContrato = e.NumeroDoContrato.Trim(),
+                    ObservacoesEntidade = "2",
+                    IdCliente = 22,
+                    IdParceria = 0
                 };
             }).ToList();
 
-            //var sql = SqlUpdateBuilder.BuildUpdates(
-            //    table: "transacao",
-            //    setProjection: TransacaoSqlMapper.MapValues,
-            //    items: transacoes,
-            //    whereProjection: TransacaoSqlMapper.MapValues
-            //);
-
-        
             var sql = SqlUpdateBuilder.BuildUpdates(
                 table: "transacao",
                 setProjection: TransacaoUpdateMapperComplementacao.MapUpdateSet,
                 items: transacoes,
-                whereProjection: TransacaoUpdateMapperComplementacao.MapWhereByNumeroAndDataNotaFiscal // ou MapWhereByIdExtrato
+                whereProjection: TransacaoUpdateMapperComplementacao.MapWhereByAlternativeColumns // ou MapWhereByIdExtrato
             );
 
             File.WriteAllText(caminhoSql, sql, Encoding.UTF8);
@@ -102,48 +94,6 @@ namespace InsercaoColaborador.Application.Services
             //        return DateTime.FromOADate(d);
 
             //    return null;
-            //}
-
-            //static int ResolverStatus(string? statusAnalise, TransacaoExcel transacaoExcel)
-            //{
-            //    var status = statusAnalise?.Trim().ToLowerInvariant();
-            //    var justificativa = transacaoExcel?.Justificativa?.Trim().ToLowerInvariant() ?? string.Empty;
-                
-            //    if (transacaoExcel == null || transacaoExcel.DataPagamento == default)
-            //        return 0;
-
-            //    var mes = transacaoExcel.DataPagamento.Month;
-
-            //    if (mes >= 1 && mes <=3)
-            //    {
-            //        if (string.IsNullOrWhiteSpace(status))
-            //            return 1;
-            //        else if (status == "esclarecimento")
-            //            return 0;
-            //        else if (status == "esclarecido")
-            //            return 1;
-            //        else if (status == "glosado")
-            //            return 2;
-            //        else if (status == "devolvido")
-            //            return 0;
-
-            //        return 0;
-            //    }
-            //    else if (mes >= 4 && mes <= 9)
-            //    {
-            //        if (status == "esclarecimento" || status == "esclarecimentos")
-            //            return 0;
-            //        if (string.IsNullOrWhiteSpace(status) || status == "ok")
-            //            return 1;
-            //        if (status == "glosada" || status == "glosado")
-            //            return 2;
-            //        if (status == "parcialmente glosada")
-            //            return 3;
-                    
-            //        return 0;
-            //    }
-
-            //    return 0;
             //}
         }
     }

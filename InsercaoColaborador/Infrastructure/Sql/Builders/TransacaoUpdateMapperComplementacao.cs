@@ -9,7 +9,6 @@ namespace InsercaoColaborador.Infrastructure.Sql.Builders
         public static string MapUpdateSet(Transacao item)
         {
             var sb = new StringBuilder();
-            sb.Append($"Numero = {item.Numero.ToSql()},\n");
             sb.Append($"NotaFiscal = {item.NotaFiscal.ToSql()},\n");
             sb.Append($"DataNotaFiscal = {item.DataNotaFiscal.ToSql()},\n");
             sb.Append($"EstadoEmissor = {item.EstadoEmissor.ToSql()},\n");
@@ -28,7 +27,9 @@ namespace InsercaoColaborador.Infrastructure.Sql.Builders
             $"IdExtrato = {item.IdExtrato.ToSql()}";
 
         // Exemplo de WHERE por chave de negócio alternativa
-        public static string MapWhereByNumeroAndDataNotaFiscal(Transacao item) =>
-            $"Numero = {item.Numero.ToSql()} AND data_nota_fiscal = {item.DataNotaFiscal.ToSql()}";
+        public static string MapWhereByAlternativeColumns(Transacao item) =>
+            $"ObservacoesEntidade = {item.ObservacoesEntidade.ToSql()} " +
+            $"AND IdCliente = {item.IdCliente.ToSql()} " +
+            $"AND IdParceria = {item.IdParceria.ToSql()}";
     }
 }
