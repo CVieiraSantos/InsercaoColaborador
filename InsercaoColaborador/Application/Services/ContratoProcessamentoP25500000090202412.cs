@@ -29,33 +29,35 @@ namespace InsercaoColaborador.Application.Services
             {
                 return new ContratoExcel
                 {
-                    CnpjFornecedor = linha.Cell(1).GetString().Trim(),
-                    NumeroContrato = linha.Cell(2).GetString().Trim(),
-                    PagamentoParcelado = ValorEmInteiro.GetInt(linha.Cell(3)),
-                    QuantidadedeParcelas = ValorEmInteiro.GetInt(linha.Cell(4)),
-                    TipoDeValorDoContrato = ValorEmInteiro.GetInt(linha.Cell(5)),
-                    TipoDeVigencia = ValorEmInteiro.GetInt(linha.Cell(6)),
-                    InicioVigencia = linha.Cell(7).GetDateTimeOrNull() ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
-                    FimVigencia = linha.Cell(8).GetDateTimeOrNull() ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
-                    DataAssinatura = linha.Cell(9).GetDateTimeOrNull() ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
-                    CriterioDeSelecao = ValorEmInteiro.GetInt(linha.Cell(10)),
-                    CriterioDeSelecaoOutro = linha.Cell(11).GetString().Trim(),
-                    CategoriaDeDespesa = linha.Cell(12).GetString().Trim(),
-                    Valor = linha.Cell(13).GetDouble(),
-                    Objeto = linha.Cell(14).GetString(),
-                    NaturezaDeContratacao = linha.Cell(15).GetString().Trim(),
-                    NaturezaNaoEspecificada = linha.Cell(16).GetString().Trim(),
-                    ArtigoRegulamentoCompras = linha.Cell(17).GetString().Trim()
+                    NomeBeneficiario = linha.Cell(1).GetString().Trim(),
+                    CnpjFornecedor = linha.Cell(2).GetString().Trim(),
+                    NumeroContrato = linha.Cell(3).GetString().Trim(),
+                    PagamentoParcelado = ValorEmInteiro.GetInt(linha.Cell(4)),
+                    QuantidadedeParcelas = ValorEmInteiro.GetInt(linha.Cell(5)),
+                    TipoDeValorDoContrato = ValorEmInteiro.GetInt(linha.Cell(6)),
+                    TipoDeVigencia = ValorEmInteiro.GetInt(linha.Cell(7)),
+                    InicioVigencia = linha.Cell(8).GetDateTimeOrNull() ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
+                    FimVigencia = linha.Cell(9).GetDateTimeOrNull() ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
+                    DataAssinatura = linha.Cell(10).GetDateTimeOrNull() ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
+                    CriterioDeSelecao = ValorEmInteiro.GetInt(linha.Cell(11)),
+                    CriterioDeSelecaoOutro = linha.Cell(12).GetString().Trim(),
+                    CategoriaDeDespesa = linha.Cell(13).GetString().Trim(),
+                    Valor = linha.Cell(14).GetDouble(),
+                    Objeto = linha.Cell(15).GetString(),
+                    NaturezaDeContratacao = linha.Cell(16).GetString().Trim(),
+                    NaturezaNaoEspecificada = linha.Cell(17).GetString().Trim(),
+                    ArtigoRegulamentoCompras = linha.Cell(18).GetString().Trim()
                 };
             });
 
             var contratos = contratoExcel.Select(e =>
             {
-
                 return new Contrato
                 {
-                    IdFornecedor = null,
-                    RazaoSocialFornecedor = ObterIdPorCnpjPorFornecedor(e.CnpjFornecedor.Trim()).ToString(),
+                    IdFornecedor = ObterIdPorCnpjPorFornecedor(e.IdFornecedor.ToString()),
+                    RazaoSocialFornecedor = e.NomeBeneficiario?.Trim().Length > 100
+                    ? e.NomeBeneficiario.Substring(0,100) 
+                    : e.NomeBeneficiario ?? string.Empty,
                     NumeroContrato = e.NumeroContrato.Trim(),
                     Parcelado = (int)ExtrairApenasNumeros(e.PagamentoParcelado, typeof(int)),
                     QuantidadedeParcelas = e.QuantidadedeParcelas,
@@ -72,7 +74,10 @@ namespace InsercaoColaborador.Application.Services
                     NaturezaContratacao = (string)ExtrairApenasNumeros(e.NaturezaDeContratacao,typeof(string)),
                     NaturezaContratacaoOutro = e.NaturezaDeContratacao == "23" ? e.NaturezaNaoEspecificada : string.Empty,
                     ArtigoRegulamentoCompras = e.ArtigoRegulamentoCompras,
-                    TipoFornecedor = 1
+                    TipoFornecedor = 1,
+                    IdIdentidade = 75,
+                    Ativo = 1,
+                    IdCliente = 22
                 };
             }).ToList();
 
