@@ -2,7 +2,7 @@
 {
     public class ContratoExcel
     {
-        public int Item { get; set; }
+        public int IdFornecedor { get; set; }
         public string CnpjFornecedor { get; set; } = null!;
         public string? NomeBeneficiario { get; set; }
         public string NumeroContrato { get; set; } = null!;
