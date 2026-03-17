@@ -10,7 +10,8 @@ var servicos = new List<IProcessamentoService>
     new TransacaoProcessamentoServiceRelaçãoDePagamentosFAPUNIFESP(),
     new ContratoProcessamento(),
     new TransacaoProcessamentoServiceRelacaoPagWylinka(),
-    new TransacaoProcessamentoServiceModeloComplementaçãoDespesasPagas()
+    new TransacaoProcessamentoServiceModeloComplementaçãoDespesasPagas(),
+    new ContratoProcessamentoP25500000090202412()
 };
 
 Console.WriteLine("Selecione o tipo de processamento:\n");
