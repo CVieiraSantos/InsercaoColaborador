@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using InsercaoColaborador.Application.Interfaces;
+﻿using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Contrato;
 using InsercaoColaborador.Extension;
 using InsercaoColaborador.Infrastructure.Sql.Builders;
@@ -12,7 +11,7 @@ namespace InsercaoColaborador.Application.Services
 {
     public class ContratoProcessamentoP25500000090202412 : IProcessamentoService
     {
-        public string Nome => "Gerar INSERT de Contratos";
+        public string Nome => "Gerar INSERT de Contratos Modelo Importacao Contratos P25500000090202412";
 
         public void Executar()
         {
@@ -30,8 +29,6 @@ namespace InsercaoColaborador.Application.Services
             {
                 return new ContratoExcel
                 {
-                    //Item = ValorEmInteiro.GetInt(linha.Cell(1)),
-                    //NomeBeneficiario = linha.Cell(1).GetString(),
                     CnpjFornecedor = linha.Cell(1).GetString().Trim(),
                     NumeroContrato = linha.Cell(2).GetString().Trim(),
                     PagamentoParcelado = ValorEmInteiro.GetInt(linha.Cell(3)),
@@ -58,21 +55,21 @@ namespace InsercaoColaborador.Application.Services
                 return new Contrato
                 {
                     IdFornecedor = null,
-                    RazaoSocialFornecedor = e.CnpjFornecedor.Trim(),
+                    RazaoSocialFornecedor = ObterIdPorCnpjPorFornecedor(e.CnpjFornecedor.Trim()).ToString(),
                     NumeroContrato = e.NumeroContrato.Trim(),
-                    Parcelado = e.PagamentoParcelado,
+                    Parcelado = (int)ExtrairApenasNumeros(e.PagamentoParcelado, typeof(int)),
                     QuantidadedeParcelas = e.QuantidadedeParcelas,
-                    TipoValorContrato = e.TipoDeValorDoContrato,
-                    TipoVigencia = e.TipoDeVigencia,
+                    TipoValorContrato = (int)ExtrairApenasNumeros(e.TipoDeValorDoContrato,typeof(int)),
+                    TipoVigencia = (int)ExtrairApenasNumeros(e.TipoDeVigencia, typeof(int)),
                     Inicio = e.InicioVigencia,
                     Fim = e.FimVigencia,
                     DataAssinatura = e.DataAssinatura,
-                    CriterioSelecao = e.CriterioDeSelecao,
+                    CriterioSelecao = (int)ExtrairApenasNumeros(e.CriterioDeSelecao, typeof(int)),
                     CriterioSelecaoOutro = e.CriterioDeSelecao == 4 ? e.CriterioDeSelecaoOutro : string.Empty,
                     CategoriaDespesa = e.CategoriaDeDespesa.Trim(),
                     Valor = e.Valor,
                     ObjetoContrato = e.Objeto,
-                    NaturezaContratacao = e.NaturezaDeContratacao,
+                    NaturezaContratacao = (string)ExtrairApenasNumeros(e.NaturezaDeContratacao,typeof(string)),
                     NaturezaContratacaoOutro = e.NaturezaDeContratacao == "23" ? e.NaturezaNaoEspecificada : string.Empty,
                     ArtigoRegulamentoCompras = e.ArtigoRegulamentoCompras,
                     TipoFornecedor = 1
@@ -171,11 +168,5 @@ namespace InsercaoColaborador.Application.Services
 
             return apenasDigitos;
         }
-
     }       
-        //contrato.NaturezaContratacao = (string) ExtrairApenasNumeros(valorExcel, typeof(string));
-
-        //// Para o Pagamento (Tipo Int)
-        //contrato.PagamentoParcelado = (int) ExtrairApenasNumeros(valorExcel, typeof(int));
-
 }
