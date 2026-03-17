@@ -28,7 +28,7 @@ namespace InsercaoColaborador.Application.Services
             {
                 return new ContratoExcel
                 {
-                    Item = ValorEmInteiro.GetInt(linha.Cell(1)),
+                    IdFornecedor = ValorEmInteiro.GetInt(linha.Cell(1)),
                     CnpjFornecedor = linha.Cell(2).GetString().Trim(),
                     NumeroContrato = linha.Cell(3).GetString().Trim(),
                     PagamentoParcelado = ValorEmInteiro.GetInt(linha.Cell(4)),
