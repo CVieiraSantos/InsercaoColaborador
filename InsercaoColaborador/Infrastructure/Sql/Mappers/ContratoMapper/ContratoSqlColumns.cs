@@ -12,7 +12,7 @@
             "Inicio",
             "Fim",
             "Parcelado",
-            "QuantidadedeParcelas",
+            "QuantidadeParcelas",
             "CategoriaDespesa",
             "LinkArquivoContrato",
             "IdEntidade",

@@ -7,7 +7,7 @@
         public string? NomeBeneficiario { get; set; }
         public string NumeroContrato { get; set; } = null!;
         public int PagamentoParcelado { get; set; }
-        public int QuantidadedeParcelas { get; set; }
+        public int QuantidaParcelas { get; set; }
         public int TipoDeValorDoContrato { get; set; }
         public int TipoDeVigencia { get; set; }
         public DateTime InicioVigencia { get; set; }
