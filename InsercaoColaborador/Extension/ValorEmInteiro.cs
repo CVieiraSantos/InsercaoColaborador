@@ -1,9 +1,5 @@
 ﻿using ClosedXML.Excel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace InsercaoColaborador.Extension
 {
@@ -16,10 +12,17 @@ namespace InsercaoColaborador.Extension
 
             var texto = cell.GetString().Trim();
 
-            if (int.TryParse(texto, out valor))
-                return valor;
+            if (string.IsNullOrEmpty(texto))
+                return 0;
 
-            throw new FormatException("Valor inválido");
+            string apenasDigitos = Regex.Replace(texto, @"[^\d]", "");
+
+            if (int.TryParse(apenasDigitos, out int resultado))
+            {
+                return resultado;
+            }
+
+            return 0;
         }
     }
 }
