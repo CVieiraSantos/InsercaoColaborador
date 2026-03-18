@@ -36,6 +36,7 @@
         public decimal ValorDocumento { get; set; }
         public decimal ValorEncargos { get; set; }
         public int EstadoEmissor { get; set; }
+        public string EstadoEmissorDescricao { get; set; } = null!;
         public int? IdContrato { get; set; }
         public int SubCategoria { get; set; }
         public string? ItemDespesa { get; set; }

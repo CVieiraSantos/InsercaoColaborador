@@ -14,14 +14,16 @@ namespace InsercaoColaborador.Extension
             if (cell.DataType == XLDataType.Number)
                 return cell.GetValue<decimal>();
 
-            if (cell.DataType == XLDataType.Text)
-            {
-                var text = cell.GetString();
-                if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
-                    return result;
-                if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.CurrentCulture, out result))
-                    return result;
-            }
+            var text = cell.GetString().Trim();
+
+            if (text == "-" || text == "N/A" || string.IsNullOrWhiteSpace(text))
+                return 0m;
+
+            if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
+                return result;
+
+            if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.CurrentCulture, out result))
+                return result;
 
             try
             {
@@ -29,13 +31,7 @@ namespace InsercaoColaborador.Extension
             }
             catch
             {
-                var text = cell.GetString();
-                if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
-                    return result;
-                if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.CurrentCulture, out result))
-                    return result;
-
-                throw;
+                return 0m;
             }
         }
     }

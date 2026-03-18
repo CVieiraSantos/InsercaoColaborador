@@ -8,6 +8,7 @@ namespace InsercaoColaborador.Entities.Transacao
         public DateTime DataPagamento { get; set; }
         public DateTime DataEmissaoDocFiscal { get; set; }
         public int EstadoEmissor { get; set; }
+        public string EstadoEmissorDescricao { get; set; } = null!;
         public string ServicoProduto { get; set; } = null!;
         public decimal Total { get; set; }
         public string? NotaFiscalOuEquivalente { get; set; }
@@ -26,6 +27,7 @@ namespace InsercaoColaborador.Entities.Transacao
         public string? Justificativa { get; set; }
         public string? ApuracaoGlosaParcial { get; set; }
         public decimal ValorBruto { get; set; }
+        public decimal ValorLiquido { get; set; }
         public decimal ValorEncargos { get; set; }
         public int? Rateio { get; set; }
         public decimal? PercentualRateio { get; set; }
