@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Bibliography;
-using InsercaoColaborador.Application.Interfaces;
+﻿using InsercaoColaborador.Application.Interfaces;
 using InsercaoColaborador.Entities.Transacao;
 using InsercaoColaborador.Extension;
 using InsercaoColaborador.Infrastructure.Sql.Builders;

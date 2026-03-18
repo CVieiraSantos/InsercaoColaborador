@@ -11,7 +11,8 @@ var servicos = new List<IProcessamentoService>
     new ContratoProcessamento(),
     new TransacaoProcessamentoServiceRelacaoPagWylinka(),
     new TransacaoProcessamentoServiceModeloComplementaçãoDespesasPagas(),
-    new ContratoProcessamentoP25500000090202412()
+    new ContratoProcessamentoP25500000090202412(),
+    new TransacaoProcessamentoServiceModeloComplementaçãoUpdateTransacaoTc()
 };
 
 Console.WriteLine("Selecione o tipo de processamento:\n");
