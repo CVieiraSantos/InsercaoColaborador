@@ -10,6 +10,8 @@ namespace InsercaoColaborador.Application.Services
 {
     public class TransacaoProcessamentoServiceModeloComplementaçãoUpdateTransacaoTc : IProcessamentoService
     {
+        private bool _passouPelo1218 = false;
+        private bool _gatilhoAtivado = false;
         public string Nome => "Gerar INSERT de Transações Complementação - update transacao tc2024";
 
         public void Executar()
@@ -25,12 +27,47 @@ namespace InsercaoColaborador.Application.Services
 
             var transacaoExcel = ExcelService.ImportarExcel(caminhoExcel, "Complementação Pagamentos", linha =>
             {
+                var dataEmissao = ValorEmData.GetDatetime(linha.Cell(4));
+                if (!dataEmissao.HasValue)
+                {
+                    Console.Error.WriteLine($"Linha {linha.RowNumber()}: Data inválida em coluna 4 ('{linha.Cell(4).GetString()}'). Linha pulada.");
+                    return null;
+                }
+
+                var rateioText = linha.Cell(12).GetString()?.Trim();
+                int rateio;
+                if (string.IsNullOrEmpty(rateioText))
+                {
+                    rateio = 0;
+                }
+                else if (rateioText.Equals("sim", StringComparison.OrdinalIgnoreCase) ||
+                         rateioText.Equals("s", StringComparison.OrdinalIgnoreCase) ||
+                         rateioText == "1")
+                {
+                    rateio = 1;
+                }
+                else if (rateioText.Equals("não", StringComparison.OrdinalIgnoreCase) ||
+                         rateioText.Equals("nao", StringComparison.OrdinalIgnoreCase) ||
+                         rateioText == "0")
+                {
+                    rateio = 0;
+                }
+                else
+                {
+                    rateio = ValorEmInteiro.GetInt(linha.Cell(12));
+                }
+
+                var percentualRateio = ValorEmDecimal.GetDecimal(linha.Cell(13));
+                if (rateio == 0)
+                    percentualRateio = 0m;
+
+
                 return new TransacaoExcel
                 {
                     Item = linha.Cell(1).GetString().Trim(),
                     NomeCredor = linha.Cell(2).GetString().Trim(),
                     NotaFiscalOuEquivalente = linha.Cell(3).GetString().Trim(),
-                    DataEmissaoDocFiscal = ValorEmData.GetDatetime(linha.Cell(4)) ?? throw new FormatException($"Invalid data in row {linha.RowNumber()}"),
+                    DataEmissaoDocFiscal = dataEmissao.Value,
                     EstadoEmissor = ValorEmInteiro.GetInt(linha.Cell(5)),
                     EstadoEmissorDescricao = linha.Cell(6).GetString().Trim(),
                     CnpjCpf = CpfCnpjGenerator.FormatarCpfOuCnpj(linha.Cell(7).GetString().Trim()),
@@ -38,21 +75,25 @@ namespace InsercaoColaborador.Application.Services
                     ValorLiquido = ValorEmDecimal.GetDecimal(linha.Cell(9)),
                     ValorEncargos = ValorEmDecimal.GetDecimal(linha.Cell(10)),
                     SubCategoriaDeDespesa = linha.Cell(11).GetString().Trim(),
-                    Rateio = ValorEmInteiro.GetInt(linha.Cell(12)),
-                    PercentualRateio = ValorEmDecimal.GetDecimal(linha.Cell(13)),
+                    Rateio = rateio,
+                    PercentualRateio = percentualRateio,
                     NumeroDoContrato = linha.Cell(14).GetString().Trim(),
                 };
             });
 
-            var transacoes = transacaoExcel.Select(e =>
+            _passouPelo1218 = false;
+            _gatilhoAtivado = false;
+
+            var listaFinal = new List<Transacao>();
+
+            foreach (var e in transacaoExcel)
             {
                 var nomeBeneficiario = GerarNomeBeneficiario.GetNomeBeneficiario(e);
-                int.TryParse(e.Item, out int numeroItem);
-                var itemFormatado = (numeroItem > 1218) ? $"2.{e.Item}" : e.Item;
-
-                return new Transacao
+                var resultado = ConcatenaOuNaoConcatena(e.Item ?? string.Empty);
+                
+                listaFinal.Add(new Transacao
                 {
-                    Numero = itemFormatado?.Trim() ?? string.Empty,
+                    Numero = e.Item?.Trim() ?? string.Empty,
                     NomeBeneficiario = nomeBeneficiario.Length > 100 ? nomeBeneficiario.Substring(0, 100) : nomeBeneficiario,
                     NotaFiscal = e.NotaFiscalOuEquivalente,
                     DataNotaFiscal = e.DataEmissaoDocFiscal,
@@ -65,12 +106,14 @@ namespace InsercaoColaborador.Application.Services
                     ExisteRateio = (e.Rateio == 1) ? 1 : 0,
                     PercentualRateio = (e.Rateio == 1) ? e.PercentualRateio : 0m,
                     NumeroDoContrato = e.NumeroDoContrato.Trim(),
-                    ObservacoesEntidade = itemFormatado?.Trim() ?? string.Empty,
+                    ObservacoesEntidade = resultado?.Trim() ?? string.Empty,
                     IdCliente = 22,
                     IdParceria = 0
-                };
-            }).ToList();
 
+                });
+            }
+            var transacoes = listaFinal;
+            
             var sql = SqlUpdateBuilder.BuildUpdates(
                 table: "transacao",
                 setProjection: TransacaoUpdateMapperComplementacao.MapUpdateSet,
@@ -79,29 +122,24 @@ namespace InsercaoColaborador.Application.Services
             );
 
             File.WriteAllText(caminhoSql, sql, Encoding.UTF8);
+        }
 
-            //DateTime? ParseExcelDate(IXLCell cell)
-            //{
+        public string ConcatenaOuNaoConcatena(string valorItem)
+        {
+            if (int.TryParse(valorItem, out int numeroItem))
+            {
+                if (!_gatilhoAtivado && _passouPelo1218 && numeroItem < 1218)
+                {
+                    _gatilhoAtivado = true;
+                }
 
-            //    var s = cell.GetString()?.Trim();
-            //    if (string.IsNullOrEmpty(s)) return null;
+                if (numeroItem == 1218)
+                {
+                    _passouPelo1218 = true;
+                }
+            }
 
-            //    if (DateTime.TryParse(s, new CultureInfo("pt-BR"), DateTimeStyles.None, out DateTime dta))
-            //        return dta;
-
-            //    var formats = new[] { "M/d/yyyy", "M/d/yy", "MM/dd/yyyy", "dd/MM/yyyy", "d/M/yyyy", "yyyy-MM-dd" };
-            //    if (DateTime.TryParseExact(s, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
-            //        return dt;
-            //    if (DateTime.TryParse(s, new CultureInfo("en-US"), DateTimeStyles.None, out dt))
-            //        return dt;
-            //    if (DateTime.TryParse(s, CultureInfo.CurrentCulture, DateTimeStyles.None, out dt))
-            //        return dt;
-
-            //    if (double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
-            //        return DateTime.FromOADate(d);
-
-            //    return null;
-            //}
+            return _gatilhoAtivado ? $"2.{valorItem}" : valorItem;
         }
     }
 }
