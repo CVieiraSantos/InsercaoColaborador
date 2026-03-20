@@ -9,11 +9,14 @@ namespace InsercaoColaborador.Infrastructure.Sql.Builders
         public static string MapUpdateSet(Transacao item)
         {
             var sb = new StringBuilder();
+            sb.Append($"Numero = {item.Numero.ToSql()},\n");
             sb.Append($"NotaFiscal = {item.NotaFiscal.ToSql()},\n");
             sb.Append($"DataNotaFiscal = {item.DataNotaFiscal.ToSql()},\n");
             sb.Append($"EstadoEmissor = {item.EstadoEmissor.ToSql()},\n");
+            sb.Append($"EstadoEmissorDescricao = {item.EstadoEmissorDescricao.ToSql()},\n");
             sb.Append($"NomeBeneficiario = {item.NomeBeneficiario.ToSql()},\n");
             sb.Append($"Valor = {item.Valor.ToSql()},\n");
+            sb.Append($"ValorDocumento = {item.ValorDocumento.ToSql()},\n");
             sb.Append($"ValorEncargos = {item.ValorEncargos.ToSql()},\n");
             sb.Append($"Categoria = {item.Categoria.ToSql()},\n");
             sb.Append($"ExisteRateio = {item.ExisteRateio.ToSql()},\n");
@@ -28,8 +31,6 @@ namespace InsercaoColaborador.Infrastructure.Sql.Builders
 
         // Exemplo de WHERE por chave de negócio alternativa
         public static string MapWhereByAlternativeColumns(Transacao item) =>
-            $"ObservacoesEntidade = {item.ObservacoesEntidade.ToSql()} " +
-            $"AND IdCliente = {item.IdCliente.ToSql()} " +
-            $"AND IdParceria = {item.IdParceria.ToSql()}";
+            $"ObservacoesEntidade = {item.ObservacoesEntidade.ToSql()} ";
     }
 }
