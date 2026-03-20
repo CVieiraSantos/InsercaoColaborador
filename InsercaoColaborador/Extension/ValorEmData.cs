@@ -1,20 +1,30 @@
 ﻿using ClosedXML.Excel;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace InsercaoColaborador.Extension
 {
     public static class ValorEmData
     {
+        private static readonly string[] NullTokens = new[] { "-", "N/A", "NA", "SEM DATA", "S/D", "NULL" };
         public static DateTime? GetDatetime(this IXLCell cell)
         {
+            if (cell == null || cell.IsEmpty()) return null;
+
+            if (cell.DataType == XLDataType.Number)
+            {
+                try
+                {
+                    var dnum = cell.GetValue<double>();
+                    return DateTime.FromOADate(dnum);
+                }
+                catch {}
+            }
 
             var s = cell.GetString()?.Trim();
             if (string.IsNullOrEmpty(s)) return null;
+
+            if (NullTokens.Contains(s, StringComparer.OrdinalIgnoreCase)) return DateTime.MinValue;
 
             if (DateTime.TryParse(s, new CultureInfo("pt-BR"), DateTimeStyles.None, out DateTime dta))
                 return dta;
