@@ -1,7 +1,6 @@
 ﻿using ClosedXML.Excel;
 using System.Globalization;
 
-
 namespace InsercaoColaborador.Extension
 {
     public static class ValorEmDecimal
@@ -11,28 +10,25 @@ namespace InsercaoColaborador.Extension
             if (cell == null || cell.IsEmpty())
                 return 0m;
 
-            if (cell.DataType == XLDataType.Number)
-                return cell.GetValue<decimal>();
+            var formatted = cell.GetFormattedString()?.Trim();
 
-            var text = cell.GetString().Trim();
-
-            if (text == "-" || text == "N/A" || string.IsNullOrWhiteSpace(text))
+            if (string.IsNullOrWhiteSpace(formatted) || formatted == "-" || formatted == "N/A")
                 return 0m;
 
-            if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out var result))
-                return result;
+            if (formatted == "1%")
+                return 1.0m;
 
-            if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.CurrentCulture, out result))
-                return result;
+            if (formatted.Contains("%"))
+            {
+                var text = formatted.Replace("%", "").Trim();
 
-            try
-            {
-                return cell.GetValue<decimal>();
+                if (decimal.TryParse(text, NumberStyles.Any, CultureInfo.CurrentCulture, out var percent))
+                {
+                    return percent;
+                }
             }
-            catch
-            {
-                return 0m;
-            }
+
+            return cell.GetValue<decimal>();
         }
     }
 }
